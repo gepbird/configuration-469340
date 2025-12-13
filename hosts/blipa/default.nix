@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   imports = [
@@ -57,6 +57,17 @@
     LC_TELEPHONE = "nl_NL.UTF-8";
     LC_TIME = "nl_NL.UTF-8";
   };
+
+  # Ensure clean /tmp on boot
+  boot.tmp.cleanOnBoot = true;
+
+  # Enable flakes and new CLI
+  nix.settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+  };
+
+  # Install git
+  environment.systemPackages = with pkgs; [ git ];
 
   # Request Chromium and Electron to run with Wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
