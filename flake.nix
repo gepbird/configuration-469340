@@ -45,6 +45,24 @@
           ./hosts/blipa
         ];
       };
+      # `nix run .#nixosConfigurations.blipa-vm.config.system.build.vm`
+      blipa-vm = nixpkgs.lib.nixosSystem {
+        pkgs = import nixpkgs { system = "x86_64-linux"; config.allowUnfree = true; };
+        specialArgs = { inherit inputs; };
+        modules = [
+          { networking.hostName = "blipa-vm"; }
+          inputs.disko.nixosModules.disko
+          inputs.lanzaboote.nixosModules.lanzaboote
+          ./hosts/blipa
+          {
+            boot.lanzaboote.enable = nixpkgs.lib.mkForce false;
+            boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
+            disko.devices = nixpkgs.lib.mkForce {};
+            users.users.arthur.hashedPassword = nixpkgs.lib.mkForce null;
+            users.users.arthur.initialPassword = "arthur";
+          }
+        ];
+      };
     };
   };
 }
